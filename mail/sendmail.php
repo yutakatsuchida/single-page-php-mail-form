@@ -26,11 +26,6 @@
 		$errorFlag = true;
 	endif;
 
-	if (empty($_POST["message"])):
-		$errorMessages[] = "Message is empty";
-		$errorFlag = true;
-	endif;
-
 	if (($_POST["province"]) == ""):
 		$errorMessages[] = "Province is not choosed";
 		$errorFlag = true;
@@ -46,8 +41,11 @@
 		$errorFlag = true;
 	endif;
 
+	if (empty($_POST["message"])):
+		$errorMessages[] = "Message is empty";
+		$errorFlag = true;
+	endif;
 
-	
 
 	// There is no error, send an email
 	if (!$errorFlag) {
@@ -55,7 +53,7 @@
 		
 		if (mb_send_mail(YOUR_EMAIL, QUESTIONER_SUBJECT, $to_you_massage, $to_you_header)) {
 			// if the message is sent
-			print EMAIL_TO_YOU_SUCCESS;
+			//print EMAIL_TO_YOU_SUCCESS;
 		} else {
 			// if the message is failed to send
 			print EMAIL_TO_YOU_FAILED;
@@ -69,7 +67,7 @@
 			$to_questioner_body = preg_replace("/\x0D\x0A|\x0D|\x0A/", "\n", $to_questioner_body);
 			if (mb_send_mail(QUESTIONER_EMAIL, EMAIL_TO_QUESTIONER_SUBJECT, $to_questioner_body, $to_questioner_header)){
 				// if the message is sent
-				print EMAIL_TO_QUESTIONER_SUCCESS;
+				//print EMAIL_TO_QUESTIONER_SUCCESS;
 			} else {
 				// if the message is failed to send
 				print MAIL_TO_QUESTIONER_FAILED;

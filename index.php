@@ -4,10 +4,9 @@ define ("MAIL_FORM", 1);
 define ("MAIL_THANKS", 2);
 
 $page = MAIL_FORM;
-$action = "";
+
 // When the form is posted, substitute $is_send for the value of is_send.
 if(!empty($_POST)):
-    $action = $_POST["action"];
     $page = MAIL_THANKS;
 endif;
 ?>
@@ -28,81 +27,106 @@ endif;
     <script>
         $(document).ready(function(){
     
-            
+            // define doms
             var $input_fullname = $("input[name='fullname']");
             var $input_email = $("input[name='email']");
             var $input_tel = $("input[name='tel']");
             var $select_province = $("select[name='province']");
             var $input_radio = $("input[type='radio']");
-            
+            var error = 0;
 
             $("form").submit(function(){
+                //initialize values
                 var error_flags = new Array();
                 error_flags = [];
+                $("form .error").remove();
 
+                // Start Validation
+
+                // Fullname
                 if($input_fullname.val() == "") {
                      error_flags.push('true');
-                     $input_fullname.next(".error").remove();
                      if ($input_fullname.next().length != 1){
-                        
                         $input_fullname.after("<p class='error alert alert-danger' role='alert'>Your full name is empty.</p>");
                     }
                 } else {
                     $input_fullname.next(".error").remove();
                 }
+
+                // Email
                 if($input_email.val() == "") {
                     error_flags.push('true');
-                    $input_email.next(".error").remove();
                     if ($input_email.next().length != 1){
                         $input_email.after("<p class='error alert alert-danger' role='alert'>Your email is empty.</p>");
                     }
                 } else if(!$input_email.val().match(/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/)){
                     error_flags.push('true');
-                    $input_email.next(".error").remove();
                     $input_email.after("<p class='error alert alert-danger' role='alert'>Wrong Email address format</p>");
                 } else {
                     $input_email.next(".error").remove();
                 }
+
+                // Tel
                 if($input_tel.val() == "") {
                     error_flags.push('true');
                     if ($input_tel.next().length != 1) {
                         $input_tel.after("<p class='error alert alert-danger' role='alert'>Your Tel is empty.</p>");
                     }
+                } else {
+                    $input_tel.next(".error").remove();
                 }
+
+                // Province
                 if($select_province.val() == "") {
                     error_flags.push('true');
                     if ($select_province.next().length != 1) {
                         $select_province.after("<p class='error alert alert-danger' role='alert'>Your Province is not choosen.</p>");
                     }
+                } else {
+                    $select_province.next(".error").remove();
                 }
+
+                // Radio
                 if(!$input_radio.is(':checked')) {
                     error_flags.push('true');
                     if ($("#radio-fieldset").next().length != 1) {
                         $("#radio-fieldset").after("<p class='error alert alert-danger' role='alert'>Radio is not choosen.</p>");
                     }
+                } else {
+                    $input_radio.next(".error").remove();
                 }
+
+                // Checkbox
                 if(!$("input[type='checkbox']").is(':checked')) {
                     error_flags.push('true');
                     
                     if ($("#checkbox-field").next().length != 1) {
                         $("#checkbox-field").after("<p class='error alert alert-danger' role='alert'>Checkbox is not choosen.</p>");
                     }
+                } else {
+                    $("#checkbox-field").next(".error").remove();
                 }
+
+                // Textarea
                 if($("textarea[name='message']").val() == "") {
                     error_flags.push('true');
                     if ($("textarea[name='message']").next().length != 1) {
                         $("textarea[name='message']").after("<p class='error alert alert-danger' role='alert'>Textarea is empty.</p>");
                     }
                 } else {
-                    error_flags.push('true');
-                    $("textarea[name='message']").next("");
+                    $("textarea[name='message']").next(".error").remove();
                 }
-                console.log(error_flags);
+                //console.log(error_flags);
 
-                if (error_flags) {
+                
+                $.each( error_flags, function( i, val ) {
+                    if (val == "true") {
+                        error = 1;
+                    }
+                });
+                if (error == 1) {
                     return false;
                 }
-                
             });
         });
     </script>
@@ -197,10 +221,15 @@ endif;
         <?php 
         break;
         
-        case MAIL_THANKS: ?>
+        case MAIL_THANKS: 
+        
+        require_once("./mail/sendmail.php");
+        ?>
             <p>Thank you for your inquiry.</p>
             <a href="./">Back to Top</a>
-        <?php break;
+        <?php
+            $page = MAIL_FORM; 
+            break;
         }?>
     </div>
   </body>
